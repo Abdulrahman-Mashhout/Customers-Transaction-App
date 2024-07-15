@@ -8,17 +8,22 @@ const TransactionGraph = ({ customerId }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const transactionsResponse = await axios.get(
-        "https://abdulrahman-mashhout.github.io/api-json/transactions.json "
-      );
-      setTransactions(transactionsResponse.data.transactions);
+      try {
+        const transactionsResponse = await axios.get(
+          "https://abdulrahman-mashhout.github.io/api-json/transactions.json"
+        );
+        setTransactions(transactionsResponse.data.transactions);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+      }
     };
+
     fetchData();
   }, []);
 
   // Filter transactions for the selected customer
   const customerTransactions = transactions.filter(
-    (transaction) => transaction.customer_id == customerId
+    (transaction) => transaction.customer_id === customerId
   );
 
   // Aggregate total amount per day
@@ -46,19 +51,21 @@ const TransactionGraph = ({ customerId }) => {
   };
 
   return (
-    <div className="mt-8">
+    <div className="max-w-screen-lg mx-auto mt-8">
       <h2 className="text-2xl font-bold text-center mb-4">
         Total Transaction Amount per Day
       </h2>
-      <div className="flex justify-center">
-        <div className="w-full md:w-3/4">
+      <div className="w-full">
+        <div className="relative" style={{ minHeight: "500px" }}>
           <Bar
             data={chartData}
             options={{
+              maintainAspectRatio: false, // Ensure chart responsiveness
               scales: {
                 y: {
+                  beginAtZero: true,
                   ticks: {
-                    beginAtZero: true,
+                    stepSize: 100, // Customize step size if needed
                   },
                 },
               },
