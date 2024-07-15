@@ -16,17 +16,17 @@ Instructions to get a copy of the project running locally.
 
 ```bash
 npm install
-
+```
 ## Running the Development Server
 
 ```bash
 npm run dev
-
+```
 ## Build and Deployment
 
 ```bash
 npm run build
-
+```
 
 ## Built With
 React
