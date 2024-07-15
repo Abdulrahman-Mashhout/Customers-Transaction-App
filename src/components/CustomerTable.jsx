@@ -11,15 +11,19 @@ const CustomerTable = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const customersResponse = await axios.get(
-        "https://abdulrahman-mashhout.github.io/api-json/customers.json"
-      );
-      const transactionsResponse = await axios.get(
-        "https://abdulrahman-mashhout.github.io/api-json/transactions.json"
-      );
-      setCustomers(customersResponse.data.customers);
-      setTransactions(transactionsResponse.data.transactions);
-      setFilteredTransactions(transactionsResponse.data.transactions);
+      try {
+        const customersResponse = await axios.get(
+          "https://abdulrahman-mashhout.github.io/api-json/customers.json"
+        );
+        const transactionsResponse = await axios.get(
+          "https://abdulrahman-mashhout.github.io/api-json/transactions.json"
+        );
+        setCustomers(customersResponse.data.customers);
+        setTransactions(transactionsResponse.data.transactions);
+        setFilteredTransactions(transactionsResponse.data.transactions);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
     fetchData();
   }, []);
@@ -56,23 +60,23 @@ const CustomerTable = () => {
     setFilterAmount("");
     setFilteredTransactions(transactions);
   };
-
+  
   return (
     <div className="container mx-auto">
       <h1 className="text-3xl font-bold text-center my-4">
         Customer Transactions
       </h1>
-      <div className="flex justify-center mb-4">
+      <div className="flex flex-col md:flex-row items-center justify-center mb-4 space-y-2 md:space-y-0 md:space-x-2">
         <input
           type="text"
-          className="p-2 border border-gray-300 rounded mr-2"
+          className="p-2 border border-gray-300 rounded"
           placeholder="Filter by Customer Name"
           value={filterName}
           onChange={(e) => setFilterName(e.target.value)}
         />
         <input
           type="text"
-          className="p-2 border border-gray-300 rounded mr-2"
+          className="p-2 border border-gray-300 rounded"
           placeholder="Filter by Transaction Amount"
           value={filterAmount}
           onChange={(e) => setFilterAmount(e.target.value)}
@@ -84,38 +88,40 @@ const CustomerTable = () => {
           Apply Filters
         </button>
         <button
-          className="bg-gray-300 text-gray-700 px-4 py-2 rounded ml-2"
+          className="bg-gray-300 text-gray-700 px-4 py-2 rounded"
           onClick={clearFilters}
         >
           Clear Filters
         </button>
       </div>
-      <table className="table-auto w-full">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="border px-4 py-2">Customer Name</th>
-            <th className="border px-4 py-2">Date</th>
-            <th className="border px-4 py-2">Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredTransactions.map((transaction) => (
-            <tr key={transaction.id} className="hover:bg-gray-100">
-              <td className="border px-4 py-2">
-                {
-                  customers.find(
-                    (customer) => customer.id == transaction.customer_id
-                  )?.name
-                }
-              </td>
-              <td className="border px-4 py-2">{transaction.date}</td>
-              <td className="border px-4 py-2">{transaction.amount}</td>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white border-collapse border-gray-300">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border px-4 py-2">Customer Name</th>
+              <th className="border px-4 py-2">Date</th>
+              <th className="border px-4 py-2">Amount</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredTransactions.map((transaction) => (
+              <tr key={transaction.id} className="hover:bg-gray-100">
+                <td className="border px-4 py-2">
+                  {
+                    customers.find(
+                      (customer) => customer.id == transaction.customer_id
+                    )?.name
+                  }
+                </td>
+                <td className="border px-4 py-2">{transaction.date}</td>
+                <td className="border px-4 py-2">{transaction.amount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {filteredTransactions.length > 0 && (
-        <TransactionGraph customerId={filteredTransactions[0].customer_id } />
+        <TransactionGraph customerId={filteredTransactions[0].customer_id} />
       )}
     </div>
   );
